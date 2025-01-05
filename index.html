@@ -48,5 +48,31 @@
         playing = true;
       }
     };
+
+    const staticCacheName = "audio-cache";
+
+    self.addEventListener("install", (event) => {
+      event.waitUntil(
+        caches.open(staticCacheName).then((cache) => {
+          return cache.add("pink.ogg");
+        })
+      );
+    });
+
+    self.addEventListener("fetch", (event) => {
+      event.respondWith(
+        caches
+          .match(event.request)
+          .then((response) => {
+            if (response) {
+              return response;
+            }
+          })
+          .catch((error) => {
+            // Respond with custom offline page
+            alert("You are offline");
+          })
+      );
+    });
   </script>
 </body>
