@@ -5,7 +5,33 @@
   <link rel="icon" type="image/png" href="icons/512.png" />
 </head>
 <body>
-  <button>Play</button>
+  <div id="btn">Play</div>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    #btn {
+      background-color: #4caf50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+
+    #btn.playing {
+      background-color: #f44336;
+    }
+  </style>
+
   <script type="text/javascript">
     var actx = new (AudioContext || webkitAudioContext)(),
       src = "pink.ogg",
@@ -35,16 +61,18 @@
     }
 
     // Simple example control
-    document.querySelector("button").onclick = function () {
+    document.querySelector("#btn").onclick = function () {
       if (playing) {
         srcNode.stop();
         srcNode = null;
         this.innerText = "Play";
+        this.classList.remove("playing");
         playing = false;
       } else {
         playLoop(audioData);
         srcNode.start();
         this.innerText = "Stop";
+        this.classList.add("playing");
         playing = true;
       }
     };
