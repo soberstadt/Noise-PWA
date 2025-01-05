@@ -1,0 +1,46 @@
+<body>
+  <button>Play</button>
+  <script type="text/javascript">
+    var actx = new (AudioContext || webkitAudioContext)(),
+      src = "./pink.ogg",
+      playing = false,
+      audioData,
+      srcNode; // global so we can access them from handlers
+
+    // Load some audio (CORS need to be allowed or we won't be able to decode the data)
+    fetch(src, { mode: "cors" })
+      .then(function (resp) {
+        return resp.arrayBuffer();
+      })
+      .then(decode);
+
+    // Decode the audio file, then start the show
+    function decode(buffer) {
+      actx.decodeAudioData(buffer, playLoop);
+    }
+
+    // Sets up a new source node as needed as stopping will render current invalid
+    function playLoop(abuffer) {
+      if (!audioData) audioData = abuffer; // create a reference for control buttons
+      srcNode = actx.createBufferSource(); // create audio source
+      srcNode.buffer = abuffer; // use decoded buffer
+      srcNode.connect(actx.destination); // create output
+      srcNode.loop = true; // takes care of perfect looping
+    }
+
+    // Simple example control
+    document.querySelector("button").onclick = function () {
+      if (playing) {
+        srcNode.stop();
+        srcNode = null;
+        this.innerText = "Play";
+        playing = false;
+      } else {
+        playLoop(audioData);
+        srcNode.start();
+        this.innerText = "Stop";
+        playing = true;
+      }
+    };
+  </script>
+</body>
